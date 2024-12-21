@@ -3,6 +3,9 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import ACTIONS from './src/Action.js';
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -97,6 +100,17 @@ io.on('connection', (socket) => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 });
+
+
+const __dirname = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "./dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "/", "dist", "index.html"));
+  });
+}
+
 
 const PORT = 5000;
 server.listen(PORT, () => {
